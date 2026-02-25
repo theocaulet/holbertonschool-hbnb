@@ -1,10 +1,9 @@
 from .base_model import BaseModel
 
-
 class Place(BaseModel):
     def __init__(self, title, description, price, latitude, longitude, owner):
         super().__init__()
-
+        
         if not title or len(title) > 100:
             raise ValueError("Title is required and must be 100 characters or less")
         if not isinstance(price, (int, float)) or price <= 0:
@@ -15,7 +14,7 @@ class Place(BaseModel):
             raise ValueError("Longitude must be between -180.0 and 180.0")
         if not owner:
             raise ValueError("Owner is required")
-
+            
         self.title = title
         self.description = description or ""
         self.price = float(price)
@@ -34,5 +33,4 @@ class Place(BaseModel):
             self.amenities.append(amenity)
 
     def __str__(self):
-        return self.id + ": " + self.title + " - $" + str(self.price)
-    + "/night"
+        return self.id + ": " + self.title + " - $" + str(self.price) + "/night"
