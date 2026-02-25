@@ -18,6 +18,11 @@ class User(BaseModel):
         self.last_name = last_name
         self.email = email
         self.is_admin = is_admin
+        self.places = []
+
+    def add_place(self, place):
+        if place not in self.places:
+            self.places.append(place)
 
     def __str__(self):
         return f"User({self.id}): {self.first_name} {self.last_name}"
