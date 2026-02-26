@@ -61,3 +61,14 @@ class Review(BaseModel):
         if not isinstance(value, str):
             raise ValueError("User must be a string")
         self._user_id = value
+
+    def to_dict(self):
+        """Convert review to dictionary representation."""
+        base_dict = super().to_dict()
+        base_dict.update({
+            'text': self.text,
+            'rating': self.rating,
+            'place_id': self.place_id,
+            'user_id': self.user_id
+        })
+        return base_dict
