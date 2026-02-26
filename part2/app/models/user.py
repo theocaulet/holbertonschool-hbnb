@@ -24,6 +24,17 @@ class User(BaseModel):
         if place not in self.places:
             self.places.append(place)
 
+    def to_dict(self):
+        """Convert user to dictionary representation."""
+        base_dict = super().to_dict()
+        base_dict.update({
+            'first_name': self.first_name,
+            'last_name': self.last_name,
+            'email': self.email,
+            'is_admin': self.is_admin
+        })
+        return base_dict
+
     def __str__(self):
         return f"User({self.id}): {self.first_name} {self.last_name}"
   
