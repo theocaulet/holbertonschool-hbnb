@@ -48,50 +48,11 @@ class Place(BaseModel):
             'price': self.price,
             'latitude': self.latitude,
             'longitude': self.longitude,
-            'owner_id': self.owner.id if self.owner else None
-        })
-        return base_dict
-
-    def __str__(self):
-        """String representation of place."""
-        return f"Place({self.title} - ${self.price}/night)"
-
-    def add_amenity(self, amenity):
-<<<<<<< HEAD
-        """Add an amenity to the place."""
-=======
->>>>>>> 78c73777ffd792a58baa0b5b06064223d5d18f2a
-        if amenity not in self.amenities:
-            self.amenities.append(amenity)
-
-    def to_dict(self):
-<<<<<<< HEAD
-        """Convert place to dictionary representation."""
-        base_dict = super().to_dict()
-        base_dict.update({
-=======
-        return {
-            'id': self.id,
->>>>>>> 78c73777ffd792a58baa0b5b06064223d5d18f2a
-            'title': self.title,
-            'description': self.description,
-            'price': self.price,
-            'latitude': self.latitude,
-            'longitude': self.longitude,
-<<<<<<< HEAD
-            'owner_id': self.owner.id if self.owner else None
-        })
-        return base_dict
-
-    def __str__(self):
-        """String representation of place."""
-        return f"Place({self.title} - ${self.price}/night)"
-=======
-            'owner_id': self.owner.id
-            if hasattr(self.owner, 'id') else self.owner,
+            'owner_id': self.owner.id if self.owner else None,
             'amenities': [amenity.id for amenity in self.amenities]
-            }
+        })
+        return base_dict
 
     def __str__(self):
-        return self.id + ":" + self.title + " - $" + str(self.price) + "/night"
->>>>>>> 78c73777ffd792a58baa0b5b06064223d5d18f2a
+        """String representation of place."""
+        return f"Place({self.title} - ${self.price}/night)"
