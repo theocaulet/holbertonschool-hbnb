@@ -111,14 +111,11 @@ class HBnBFacade:
         if not place:
             raise ValueError("Place not found")
         
-        # Create review data with user and place objects instead of IDs
-        review_data_copy = review_data.copy()
-        review_data_copy['user'] = user
-        review_data_copy['place'] = place
-        review_data_copy.pop('user_id', None)
-        review_data_copy.pop('place_id', None)
+        # Create review with proper constructor arguments
+        text = review_data.get('text')
+        rating = review_data.get('rating')
         
-        review = Review(**review_data_copy)
+        review = Review(text, rating, place, user)
         self.review_repo.add(review)
         
         # Add review to place
