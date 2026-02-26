@@ -22,13 +22,7 @@ class ReviewList(Resource):
         review_data = api.payload
         try:
             new_review = facade.create_review(review_data)
-            return {
-                'id': new_review.id,
-                'text': new_review.text,
-                'rating': new_review.rating,
-                'user_id': new_review.user_id,
-                'place_id': new_review.place_id
-            }, 201
+            return new_review.to_dict(), 201
         except ValueError as e:
             return {'error': str(e)}, 400
 
@@ -36,13 +30,7 @@ class ReviewList(Resource):
     def get(self):
         """Retrieve all reviews"""
         reviews = facade.get_all_reviews()
-        return [{
-            'id': review.id,
-            'text': review.text,
-            'rating': review.rating,
-            'user_id': review.user_id,
-            'place_id': review.place_id
-        } for review in reviews], 200
+        return [review.to_dict() for review in reviews], 200
 
 @api.route('/<review_id>')
 class ReviewResource(Resource):
@@ -53,13 +41,7 @@ class ReviewResource(Resource):
         review = facade.get_review(review_id)
         if not review:
             return {'error': 'Review not found'}, 404
-        return {
-            'id': review.id,
-            'text': review.text,
-            'rating': review.rating,
-            'user_id': review.user_id,
-            'place_id': review.place_id
-        }, 200
+        return review.to_dict(), 200
 
     @api.expect(review_model, validate=True)
     @api.response(200, 'Review updated successfully')
@@ -72,13 +54,7 @@ class ReviewResource(Resource):
             updated_review = facade.update_review(review_id, review_data)
             if not updated_review:
                 return {'error': 'Review not found'}, 404
-            return {
-                'id': updated_review.id,
-                'text': updated_review.text,
-                'rating': updated_review.rating,
-                'user_id': updated_review.user_id,
-                'place_id': updated_review.place_id
-            }, 200
+            return updated_review.to_dict(), 200
         except ValueError as e:
             return {'error': str(e)}, 400
 
@@ -97,11 +73,5 @@ class PlaceReviewList(Resource):
     def get(self, place_id):
         """Get all reviews for a specific place"""
         reviews = facade.get_reviews_by_place(place_id)
-        return [{
-            'id': review.id,
-            'text': review.text,
-            'rating': review.rating,
-            'user_id': review.user_id,
-            'place_id': review.place_id
-        } for review in reviews], 200
+        return [review.to_dict() for review in reviews], 200
 
