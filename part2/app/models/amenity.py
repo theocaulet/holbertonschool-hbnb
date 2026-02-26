@@ -22,3 +22,11 @@ class Amenity(BaseModel):
         if len(value) > 50:
             raise ValueError("Name must be a maximum of 50 characters")
         self._name = value
+
+    def to_dict(self):
+        """Convert amenity to dictionary representation."""
+        base_dict = super().to_dict()
+        base_dict.update({
+            'name': self.name
+        })
+        return base_dict
