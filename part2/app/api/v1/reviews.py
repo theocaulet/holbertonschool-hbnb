@@ -104,3 +104,4 @@ class PlaceReviewList(Resource):
             'user_id': review.user_id,
             'place_id': review.place_id
         } for review in reviews], 200
+
