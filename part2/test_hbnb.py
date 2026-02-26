@@ -352,11 +352,6 @@ class TestReviewEndpoints(TestHBnBApplication):
                                   json=review_data,
                                   content_type='application/json')
         
-        if response.status_code != 201:
-            print(f"DEBUG: Response status: {response.status_code}")
-            print(f"DEBUG: Response data: {response.data}")
-            print(f"DEBUG: User ID being used: {self.user_id}")
-            print(f"DEBUG: Place ID being used: {self.place_id}")
         self.assertEqual(response.status_code, 201)
         data = json.loads(response.data)
         self.assertIn('id', data)
@@ -423,6 +418,113 @@ class TestReviewEndpoints(TestHBnBApplication):
         self.assertEqual(response.status_code, 200)
         data = json.loads(response.data)
         self.assertIn('message', data)
+
+
+class TestAmenityEndpoints(TestHBnBApplication):
+    """Test Amenity-related endpoints."""
+
+    def test_create_amenity_success(self):
+        """Test successful amenity creation."""
+        amenity_data = {
+            "name": "WiFi"
+        }
+        
+        response = self.client.post('/api/v1/amenities/', 
+                                  json=amenity_data,
+                                  content_type='application/json')
+        
+        self.assertEqual(response.status_code, 201)
+        data = json.loads(response.data)
+        self.assertIn('id', data)
+        self.assertEqual(data['name'], "WiFi")
+
+    def test_create_amenity_empty_name(self):
+        """Test amenity creation with empty name."""
+        amenity_data = {
+            "name": ""
+        }
+        
+        response = self.client.post('/api/v1/amenities/', 
+                                  json=amenity_data,
+                                  content_type='application/json')
+        
+        self.assertEqual(response.status_code, 400)
+        data = json.loads(response.data)
+        self.assertIn('error', data)
+
+    def test_get_amenity_success(self):
+        """Test successful amenity retrieval."""
+        # Create an amenity first
+        amenity_data = {
+            "name": "Air Conditioning"
+        }
+        
+        create_response = self.client.post('/api/v1/amenities/', 
+                                         json=amenity_data,
+                                         content_type='application/json')
+        created_amenity = json.loads(create_response.data)
+        amenity_id = created_amenity['id']
+        
+        # Retrieve the amenity
+        response = self.client.get(f'/api/v1/amenities/{amenity_id}')
+        
+        self.assertEqual(response.status_code, 200)
+        data = json.loads(response.data)
+        self.assertEqual(data['name'], "Air Conditioning")
+
+    def test_get_all_amenities(self):
+        """Test retrieving all amenities."""
+        # Create multiple amenities
+        amenities_data = [
+            {"name": "WiFi"},
+            {"name": "Parking"},
+            {"name": "Pool"}
+        ]
+        
+        for amenity_data in amenities_data:
+            self.client.post('/api/v1/amenities/', 
+                           json=amenity_data,
+                           content_type='application/json')
+        
+        response = self.client.get('/api/v1/amenities/')
+        
+        self.assertEqual(response.status_code, 200)
+        data = json.loads(response.data)
+        self.assertEqual(len(data), 3)
+
+    def test_update_amenity_success(self):
+        """Test successful amenity update."""
+        # Create an amenity
+        amenity_data = {
+            "name": "Original Name"
+        }
+        
+        create_response = self.client.post('/api/v1/amenities/', 
+                                         json=amenity_data,
+                                         content_type='application/json')
+        created_amenity = json.loads(create_response.data)
+        amenity_id = created_amenity['id']
+        
+        # Update the amenity
+        update_data = {
+            "name": "Updated Name"
+        }
+        
+        response = self.client.put(f'/api/v1/amenities/{amenity_id}', 
+                                 json=update_data,
+                                 content_type='application/json')
+        
+        self.assertEqual(response.status_code, 200)
+        data = json.loads(response.data)
+        self.assertEqual(data['name'], "Updated Name")
+
+    def test_get_amenity_not_found(self):
+        """Test amenity retrieval with invalid ID."""
+        response = self.client.get('/api/v1/amenities/invalid-id')
+        
+        self.assertEqual(response.status_code, 404)
+        data = json.loads(response.data)
+        self.assertIn('error', data)
 
 
 class TestValidation(TestHBnBApplication):
@@ -492,6 +594,7 @@ def run_tests():
         TestUserEndpoints,
         TestPlaceEndpoints,
         TestReviewEndpoints,
+        TestAmenityEndpoints,
         TestValidation
     ]
     
