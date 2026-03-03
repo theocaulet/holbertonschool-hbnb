@@ -19,7 +19,7 @@ class TestHBnBApplication(unittest.TestCase):
         self.client = self.app.test_client()
         self.app_context = self.app.app_context()
         self.app_context.push()
-        
+
         # Reset facade for each test
         from app.services import facade
         facade.user_repo = facade.user_repo.__class__()
@@ -42,11 +42,11 @@ class TestUserEndpoints(TestHBnBApplication):
             "last_name": "Doe",
             "email": "john.doe@example.com"
         }
-        
-        response = self.client.post('/api/v1/users/', 
-                                  json=user_data,
-                                  content_type='application/json')
-        
+
+        response = self.client.post('/api/v1/users/',
+                                    json=user_data,
+                                    content_type='application/json')
+
         self.assertEqual(response.status_code, 201)
         data = json.loads(response.data)
         self.assertIn('id', data)
@@ -61,17 +61,17 @@ class TestUserEndpoints(TestHBnBApplication):
             "last_name": "Doe",
             "email": "john.doe@example.com"
         }
-        
+
         # Create first user
-        self.client.post('/api/v1/users/', 
-                        json=user_data,
-                        content_type='application/json')
-        
+        self.client.post('/api/v1/users/',
+                         json=user_data,
+                         content_type='application/json')
+
         # Try to create second user with same email
-        response = self.client.post('/api/v1/users/', 
-                                  json=user_data,
-                                  content_type='application/json')
-        
+        response = self.client.post('/api/v1/users/',
+                                    json=user_data,
+                                    content_type='application/json')
+
         self.assertEqual(response.status_code, 400)
         data = json.loads(response.data)
         self.assertIn('error', data)
@@ -84,11 +84,11 @@ class TestUserEndpoints(TestHBnBApplication):
             "last_name": "",
             "email": "invalid-email"
         }
-        
-        response = self.client.post('/api/v1/users/', 
-                                  json=invalid_data,
-                                  content_type='application/json')
-        
+
+        response = self.client.post('/api/v1/users/',
+                                    json=invalid_data,
+                                    content_type='application/json')
+
         self.assertEqual(response.status_code, 400)
 
     def test_get_user_success(self):
@@ -99,16 +99,16 @@ class TestUserEndpoints(TestHBnBApplication):
             "last_name": "Smith",
             "email": "jane.smith@example.com"
         }
-        
-        create_response = self.client.post('/api/v1/users/', 
-                                         json=user_data,
-                                         content_type='application/json')
+
+        create_response = self.client.post('/api/v1/users/',
+                                           json=user_data,
+                                           content_type='application/json')
         created_user = json.loads(create_response.data)
         user_id = created_user['id']
-        
+
         # Now retrieve the user
         response = self.client.get(f'/api/v1/users/{user_id}')
-        
+
         self.assertEqual(response.status_code, 200)
         data = json.loads(response.data)
         self.assertEqual(data['id'], user_id)
@@ -117,7 +117,7 @@ class TestUserEndpoints(TestHBnBApplication):
     def test_get_user_not_found(self):
         """Test user retrieval with invalid ID."""
         response = self.client.get('/api/v1/users/invalid-id')
-        
+
         self.assertEqual(response.status_code, 404)
         data = json.loads(response.data)
         self.assertIn('error', data)
@@ -129,14 +129,14 @@ class TestUserEndpoints(TestHBnBApplication):
             {"first_name": "User1", "last_name": "Test", "email": "user1@test.com"},
             {"first_name": "User2", "last_name": "Test", "email": "user2@test.com"}
         ]
-        
+
         for user_data in users_data:
-            self.client.post('/api/v1/users/', 
-                           json=user_data,
-                           content_type='application/json')
-        
+            self.client.post('/api/v1/users/',
+                             json=user_data,
+                             content_type='application/json')
+
         response = self.client.get('/api/v1/users/')
-        
+
         self.assertEqual(response.status_code, 200)
         data = json.loads(response.data)
         self.assertEqual(len(data), 2)
@@ -149,24 +149,24 @@ class TestUserEndpoints(TestHBnBApplication):
             "last_name": "Name",
             "email": "original@example.com"
         }
-        
-        create_response = self.client.post('/api/v1/users/', 
-                                         json=user_data,
-                                         content_type='application/json')
+
+        create_response = self.client.post('/api/v1/users/',
+                                           json=user_data,
+                                           content_type='application/json')
         created_user = json.loads(create_response.data)
         user_id = created_user['id']
-        
+
         # Update the user
         update_data = {
             "first_name": "Updated",
             "last_name": "Name",
             "email": "updated@example.com"
         }
-        
-        response = self.client.put(f'/api/v1/users/{user_id}', 
-                                 json=update_data,
-                                 content_type='application/json')
-        
+
+        response = self.client.put(f'/api/v1/users/{user_id}',
+                                   json=update_data,
+                                   content_type='application/json')
+
         self.assertEqual(response.status_code, 200)
         data = json.loads(response.data)
         self.assertEqual(data['first_name'], "Updated")
@@ -179,11 +179,11 @@ class TestUserEndpoints(TestHBnBApplication):
             "last_name": "Name",
             "email": "updated@example.com"
         }
-        
-        response = self.client.put('/api/v1/users/invalid-id', 
-                                 json=update_data,
-                                 content_type='application/json')
-        
+
+        response = self.client.put('/api/v1/users/invalid-id',
+                                   json=update_data,
+                                   content_type='application/json')
+
         self.assertEqual(response.status_code, 404)
 
 
@@ -199,10 +199,10 @@ class TestPlaceEndpoints(TestHBnBApplication):
             "last_name": "User",
             "email": "owner@example.com"
         }
-        
-        response = self.client.post('/api/v1/users/', 
-                                  json=user_data,
-                                  content_type='application/json')
+
+        response = self.client.post('/api/v1/users/',
+                                    json=user_data,
+                                    content_type='application/json')
         self.owner = json.loads(response.data)
         self.owner_id = self.owner['id']
 
@@ -216,11 +216,11 @@ class TestPlaceEndpoints(TestHBnBApplication):
             "longitude": -74.0060,
             "owner_id": self.owner_id
         }
-        
-        response = self.client.post('/api/v1/places/', 
-                                  json=place_data,
-                                  content_type='application/json')
-        
+
+        response = self.client.post('/api/v1/places/',
+                                    json=place_data,
+                                    content_type='application/json')
+
         self.assertEqual(response.status_code, 201)
         data = json.loads(response.data)
         self.assertIn('id', data)
@@ -237,11 +237,11 @@ class TestPlaceEndpoints(TestHBnBApplication):
             "longitude": -74.0,
             "owner_id": "invalid-owner-id"
         }
-        
-        response = self.client.post('/api/v1/places/', 
-                                  json=place_data,
-                                  content_type='application/json')
-        
+
+        response = self.client.post('/api/v1/places/',
+                                    json=place_data,
+                                    content_type='application/json')
+
         self.assertEqual(response.status_code, 400)
 
     def test_get_place_success(self):
@@ -255,16 +255,16 @@ class TestPlaceEndpoints(TestHBnBApplication):
             "longitude": -74.0,
             "owner_id": self.owner_id
         }
-        
-        create_response = self.client.post('/api/v1/places/', 
-                                         json=place_data,
-                                         content_type='application/json')
+
+        create_response = self.client.post('/api/v1/places/',
+                                           json=place_data,
+                                           content_type='application/json')
         created_place = json.loads(create_response.data)
         place_id = created_place['id']
-        
+
         # Retrieve the place
         response = self.client.get(f'/api/v1/places/{place_id}')
-        
+
         self.assertEqual(response.status_code, 200)
         data = json.loads(response.data)
         self.assertEqual(data['title'], "Test Place")
@@ -281,13 +281,13 @@ class TestPlaceEndpoints(TestHBnBApplication):
                 "longitude": -74.0 - i,
                 "owner_id": self.owner_id
             }
-            
-            self.client.post('/api/v1/places/', 
-                           json=place_data,
-                           content_type='application/json')
-        
+
+            self.client.post('/api/v1/places/',
+                             json=place_data,
+                             content_type='application/json')
+
         response = self.client.get('/api/v1/places/')
-        
+
         self.assertEqual(response.status_code, 200)
         data = json.loads(response.data)
         self.assertEqual(len(data), 2)
@@ -299,31 +299,31 @@ class TestReviewEndpoints(TestHBnBApplication):
     def setUp(self):
         """Set up test data including user and place for reviews."""
         super().setUp()
-        
+
         # Create an owner user
         owner_data = {
             "first_name": "Place",
-            "last_name": "Owner", 
+            "last_name": "Owner",
             "email": "owner@example.com"
         }
-        response = self.client.post('/api/v1/users/', 
-                                  json=owner_data,
-                                  content_type='application/json')
+        response = self.client.post('/api/v1/users/',
+                                    json=owner_data,
+                                    content_type='application/json')
         self.owner = json.loads(response.data)
         self.owner_id = self.owner['id']
-        
+
         # Create a reviewer user
         reviewer_data = {
             "first_name": "Reviewer",
             "last_name": "User",
             "email": "reviewer@example.com"
         }
-        response = self.client.post('/api/v1/users/', 
-                                  json=reviewer_data,
-                                  content_type='application/json')
+        response = self.client.post('/api/v1/users/',
+                                    json=reviewer_data,
+                                    content_type='application/json')
         self.user = json.loads(response.data)
         self.user_id = self.user['id']
-        
+
         # Create a place
         place_data = {
             "title": "Test Place",
@@ -333,9 +333,9 @@ class TestReviewEndpoints(TestHBnBApplication):
             "longitude": -74.0,
             "owner_id": self.owner_id
         }
-        response = self.client.post('/api/v1/places/', 
-                                  json=place_data,
-                                  content_type='application/json')
+        response = self.client.post('/api/v1/places/',
+                                    json=place_data,
+                                    content_type='application/json')
         self.place = json.loads(response.data)
         self.place_id = self.place['id']
 
@@ -347,11 +347,11 @@ class TestReviewEndpoints(TestHBnBApplication):
             "user_id": self.user_id,
             "place_id": self.place_id
         }
-        
-        response = self.client.post('/api/v1/reviews/', 
-                                  json=review_data,
-                                  content_type='application/json')
-        
+
+        response = self.client.post('/api/v1/reviews/',
+                                    json=review_data,
+                                    content_type='application/json')
+
         self.assertEqual(response.status_code, 201)
         data = json.loads(response.data)
         self.assertIn('id', data)
@@ -366,11 +366,11 @@ class TestReviewEndpoints(TestHBnBApplication):
             "user_id": "invalid-user-id",
             "place_id": self.place_id
         }
-        
-        response = self.client.post('/api/v1/reviews/', 
-                                  json=review_data,
-                                  content_type='application/json')
-        
+
+        response = self.client.post('/api/v1/reviews/',
+                                    json=review_data,
+                                    content_type='application/json')
+
         self.assertEqual(response.status_code, 400)
 
     def test_get_review_success(self):
@@ -382,16 +382,16 @@ class TestReviewEndpoints(TestHBnBApplication):
             "user_id": self.user_id,
             "place_id": self.place_id
         }
-        
-        create_response = self.client.post('/api/v1/reviews/', 
-                                         json=review_data,
-                                         content_type='application/json')
+
+        create_response = self.client.post('/api/v1/reviews/',
+                                           json=review_data,
+                                           content_type='application/json')
         created_review = json.loads(create_response.data)
         review_id = created_review['id']
-        
+
         # Retrieve the review
         response = self.client.get(f'/api/v1/reviews/{review_id}')
-        
+
         self.assertEqual(response.status_code, 200)
         data = json.loads(response.data)
         self.assertEqual(data['text'], "Test review")
@@ -405,16 +405,16 @@ class TestReviewEndpoints(TestHBnBApplication):
             "user_id": self.user_id,
             "place_id": self.place_id
         }
-        
-        create_response = self.client.post('/api/v1/reviews/', 
-                                         json=review_data,
-                                         content_type='application/json')
+
+        create_response = self.client.post('/api/v1/reviews/',
+                                           json=review_data,
+                                           content_type='application/json')
         created_review = json.loads(create_response.data)
         review_id = created_review['id']
-        
+
         # Delete the review
         response = self.client.delete(f'/api/v1/reviews/{review_id}')
-        
+
         self.assertEqual(response.status_code, 200)
         data = json.loads(response.data)
         self.assertIn('message', data)
@@ -428,11 +428,11 @@ class TestAmenityEndpoints(TestHBnBApplication):
         amenity_data = {
             "name": "WiFi"
         }
-        
-        response = self.client.post('/api/v1/amenities/', 
-                                  json=amenity_data,
-                                  content_type='application/json')
-        
+
+        response = self.client.post('/api/v1/amenities/',
+                                    json=amenity_data,
+                                    content_type='application/json')
+
         self.assertEqual(response.status_code, 201)
         data = json.loads(response.data)
         self.assertIn('id', data)
@@ -443,11 +443,11 @@ class TestAmenityEndpoints(TestHBnBApplication):
         amenity_data = {
             "name": ""
         }
-        
-        response = self.client.post('/api/v1/amenities/', 
-                                  json=amenity_data,
-                                  content_type='application/json')
-        
+
+        response = self.client.post('/api/v1/amenities/',
+                                    json=amenity_data,
+                                    content_type='application/json')
+
         self.assertEqual(response.status_code, 400)
         data = json.loads(response.data)
         self.assertIn('error', data)
@@ -458,16 +458,16 @@ class TestAmenityEndpoints(TestHBnBApplication):
         amenity_data = {
             "name": "Air Conditioning"
         }
-        
-        create_response = self.client.post('/api/v1/amenities/', 
-                                         json=amenity_data,
-                                         content_type='application/json')
+
+        create_response = self.client.post('/api/v1/amenities/',
+                                           json=amenity_data,
+                                           content_type='application/json')
         created_amenity = json.loads(create_response.data)
         amenity_id = created_amenity['id']
-        
+
         # Retrieve the amenity
         response = self.client.get(f'/api/v1/amenities/{amenity_id}')
-        
+
         self.assertEqual(response.status_code, 200)
         data = json.loads(response.data)
         self.assertEqual(data['name'], "Air Conditioning")
@@ -480,14 +480,14 @@ class TestAmenityEndpoints(TestHBnBApplication):
             {"name": "Parking"},
             {"name": "Pool"}
         ]
-        
+
         for amenity_data in amenities_data:
-            self.client.post('/api/v1/amenities/', 
-                           json=amenity_data,
-                           content_type='application/json')
-        
+            self.client.post('/api/v1/amenities/',
+                             json=amenity_data,
+                             content_type='application/json')
+
         response = self.client.get('/api/v1/amenities/')
-        
+
         self.assertEqual(response.status_code, 200)
         data = json.loads(response.data)
         self.assertEqual(len(data), 3)
@@ -498,22 +498,22 @@ class TestAmenityEndpoints(TestHBnBApplication):
         amenity_data = {
             "name": "Original Name"
         }
-        
-        create_response = self.client.post('/api/v1/amenities/', 
-                                         json=amenity_data,
-                                         content_type='application/json')
+
+        create_response = self.client.post('/api/v1/amenities/',
+                                           json=amenity_data,
+                                           content_type='application/json')
         created_amenity = json.loads(create_response.data)
         amenity_id = created_amenity['id']
-        
+
         # Update the amenity
         update_data = {
             "name": "Updated Name"
         }
-        
-        response = self.client.put(f'/api/v1/amenities/{amenity_id}', 
-                                 json=update_data,
-                                 content_type='application/json')
-        
+
+        response = self.client.put(f'/api/v1/amenities/{amenity_id}',
+                                   json=update_data,
+                                   content_type='application/json')
+
         self.assertEqual(response.status_code, 200)
         data = json.loads(response.data)
         self.assertEqual(data['name'], "Updated Name")
@@ -521,7 +521,7 @@ class TestAmenityEndpoints(TestHBnBApplication):
     def test_get_amenity_not_found(self):
         """Test amenity retrieval with invalid ID."""
         response = self.client.get('/api/v1/amenities/invalid-id')
-        
+
         self.assertEqual(response.status_code, 404)
         data = json.loads(response.data)
         self.assertIn('error', data)
@@ -537,11 +537,11 @@ class TestValidation(TestHBnBApplication):
             {"first_name": "John", "last_name": "", "email": "test@example.com"},
             {"first_name": "John", "last_name": "Doe", "email": ""}
         ]
-        
+
         for user_data in invalid_users:
-            response = self.client.post('/api/v1/users/', 
-                                      json=user_data,
-                                      content_type='application/json')
+            response = self.client.post('/api/v1/users/',
+                                        json=user_data,
+                                        content_type='application/json')
             self.assertEqual(response.status_code, 400)
 
     def test_place_validation_invalid_coordinates(self):
@@ -552,11 +552,11 @@ class TestValidation(TestHBnBApplication):
             "last_name": "User",
             "email": "owner@example.com"
         }
-        response = self.client.post('/api/v1/users/', 
-                                  json=user_data,
-                                  content_type='application/json')
+        response = self.client.post('/api/v1/users/',
+                                    json=user_data,
+                                    content_type='application/json')
         owner = json.loads(response.data)
-        
+
         invalid_places = [
             {
                 "title": "Test",
@@ -575,11 +575,11 @@ class TestValidation(TestHBnBApplication):
                 "owner_id": owner['id']
             }
         ]
-        
+
         for place_data in invalid_places:
-            response = self.client.post('/api/v1/places/', 
-                                      json=place_data,
-                                      content_type='application/json')
+            response = self.client.post('/api/v1/places/',
+                                        json=place_data,
+                                        content_type='application/json')
             self.assertEqual(response.status_code, 400)
 
 
@@ -588,7 +588,7 @@ def run_tests():
     # Create test suite
     loader = unittest.TestLoader()
     suite = unittest.TestSuite()
-    
+
     # Add test classes
     test_classes = [
         TestUserEndpoints,
@@ -597,15 +597,15 @@ def run_tests():
         TestAmenityEndpoints,
         TestValidation
     ]
-    
+
     for test_class in test_classes:
         tests = loader.loadTestsFromTestCase(test_class)
         suite.addTests(tests)
-    
+
     # Run tests with detailed output
     runner = unittest.TextTestRunner(verbosity=2)
     result = runner.run(suite)
-    
+
     # Print summary
     print(f"\n{'='*60}")
     print(f"TEST SUMMARY")
@@ -613,18 +613,19 @@ def run_tests():
     print(f"Tests run: {result.testsRun}")
     print(f"Failures: {len(result.failures)}")
     print(f"Errors: {len(result.errors)}")
-    print(f"Success rate: {((result.testsRun - len(result.failures) - len(result.errors)) / result.testsRun * 100):.1f}%")
-    
+    print(
+        f"Success rate: {((result.testsRun - len(result.failures) - len(result.errors)) / result.testsRun * 100):.1f}%")
+
     if result.failures:
         print(f"\nFAILURES:")
         for test, traceback in result.failures:
             print(f"- {test}")
-    
+
     if result.errors:
         print(f"\nERRORS:")
         for test, traceback in result.errors:
             print(f"- {test}")
-    
+
     return result.wasSuccessful()
 
 
@@ -632,7 +633,7 @@ if __name__ == '__main__':
     print("🧪 Running HBnB Application Unit Tests")
     print("="*60)
     success = run_tests()
-    
+
     if success:
         print("\n🎉 All tests passed!")
         exit(0)
