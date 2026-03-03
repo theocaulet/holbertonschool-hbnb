@@ -70,6 +70,8 @@ class PlaceResource(Resource):
         place_data = api.payload
         try:
             updated_place = facade.update_place(place_id, place_data)
+            if updated_place is None:
+                return {'error': 'Place not found'}, 404
             return updated_place.to_dict(), 200
         except ValueError as e:
             return {'error': str(e)}, 400

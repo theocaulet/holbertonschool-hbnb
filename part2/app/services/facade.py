@@ -60,7 +60,15 @@ class HBnBFacade:
         place_data_copy['owner'] = owner
         place_data_copy.pop('owner_id', None)
         
+        # Extract amenities to add them separately after place creation
+        amenities_list = place_data_copy.pop('amenities', [])
+        
         place = Place(**place_data_copy)
+        
+        # Add amenities if provided
+        for amenity in amenities_list:
+            place.add_amenity(amenity)
+            
         self.place_repo.add(place)
         return place
 
