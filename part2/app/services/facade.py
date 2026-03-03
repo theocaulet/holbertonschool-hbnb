@@ -7,6 +7,7 @@ class HBnBFacade:
     Facade class that provides a unified interface to the HBnB application's
     core functionality, managing users, places, reviews, and amenities through repositories.
     """
+
     def __init__(self):
         """Initialize the HBnBFacade with in-memory repositories."""
         self.user_repo = InMemoryRepository()
@@ -27,7 +28,8 @@ class HBnBFacade:
 
     def get_user_by_email(self, email):
         """Retrieve a user by their email address."""
-        users = [user for user in self.user_repo.get_all() if user.email == email]
+        users = [user for user in self.user_repo.get_all()
+                 if user.email == email]
         return users[0] if users else None
 
     def get_all_users(self):
@@ -50,25 +52,25 @@ class HBnBFacade:
         owner_id = place_data.get('owner_id')
         if not owner_id:
             raise ValueError("Owner ID is required")
-        
+
         owner = self.get_user(owner_id)
         if not owner:
             raise ValueError("Owner not found")
-        
+
         # Create place data with owner object instead of owner_id
         place_data_copy = place_data.copy()
         place_data_copy['owner'] = owner
         place_data_copy.pop('owner_id', None)
-        
+
         # Extract amenities to add them separately after place creation
         amenities_list = place_data_copy.pop('amenities', [])
-        
+
         place = Place(**place_data_copy)
-        
+
         # Add amenities if provided
         for amenity in amenities_list:
             place.add_amenity(amenity)
-            
+
         self.place_repo.add(place)
         return place
 
@@ -85,7 +87,7 @@ class HBnBFacade:
         place = self.place_repo.get(place_id)
         if not place:
             return None
-            
+
         # If updating owner, validate the new owner exists
         if 'owner_id' in place_data:
             new_owner = self.get_user(place_data['owner_id'])
@@ -94,7 +96,7 @@ class HBnBFacade:
             place_data = place_data.copy()
             place_data['owner'] = new_owner
             place_data.pop('owner_id')
-            
+
         place.update(place_data)
         return place
     # endregion
@@ -105,30 +107,30 @@ class HBnBFacade:
         # Validate that user and place exist
         user_id = review_data.get('user_id')
         place_id = review_data.get('place_id')
-        
+
         if not user_id:
             raise ValueError("User ID is required")
         if not place_id:
             raise ValueError("Place ID is required")
-            
+
         user = self.get_user(user_id)
         if not user:
             raise ValueError("User not found")
-            
+
         place = self.get_place(place_id)
         if not place:
             raise ValueError("Place not found")
-        
+
         # Create review with proper constructor arguments
         text = review_data.get('text')
         rating = review_data.get('rating')
-        
+
         review = Review(text, rating, place, user)
         self.review_repo.add(review)
-        
+
         # Add review to place
         place.add_review(review)
-        
+
         return review
 
     def get_review(self, review_id):
@@ -156,12 +158,12 @@ class HBnBFacade:
         review = self.review_repo.get(review_id)
         if not review:
             return False
-            
+
         # Remove review from place
         place = self.get_place(review.place_id)
         if place and review in place.reviews:
             place.reviews.remove(review)
-            
+
         self.review_repo.delete(review_id)
         return True
     # endregion
