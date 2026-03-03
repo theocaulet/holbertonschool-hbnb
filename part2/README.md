@@ -192,5 +192,5 @@ This project is part of the Holberton School program.
 - ### **Nabil Zinini**
 - Github : https://github.com/zinininabil-stack
 
-- ### ** Théo Caulet**
+- ### **Théo Caulet**
 - Github : https://github.com/theocaulet
