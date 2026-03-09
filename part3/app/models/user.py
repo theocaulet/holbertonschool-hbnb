@@ -1,5 +1,6 @@
 import re
 from .base_model import BaseModel
+from app import bcrypt
 
 
 class User(BaseModel):
@@ -22,6 +23,7 @@ class User(BaseModel):
         self.email = email
         self.is_admin = is_admin
         self.places = []
+        self.password = None
 
     def add_place(self, place):
         if place not in self.places:
@@ -40,3 +42,11 @@ class User(BaseModel):
 
     def __str__(self):
         return f"User({self.id}): {self.first_name} {self.last_name}"
+
+    def hash_password(self, password):
+        """Hashes the password before storing it."""
+        self.password = bcrypt.generate_password_hash(password).decode('utf-8')
+
+    def verify_password(self, password):
+        """Verifies if the provided password matches the hashed password."""
+        return bcrypt.check_password_hash(self.password, password)
