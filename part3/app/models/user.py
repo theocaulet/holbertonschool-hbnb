@@ -4,7 +4,7 @@ from app import bcrypt
 
 
 class User(BaseModel):
-    def __init__(self, first_name, last_name, email, is_admin=False):
+    def __init__(self, first_name, last_name, email, password, is_admin=False):
         super().__init__()
 
         if not first_name or len(first_name) > 50:
@@ -23,7 +23,7 @@ class User(BaseModel):
         self.email = email
         self.is_admin = is_admin
         self.places = []
-        self.password = None
+        self.password = password
 
     def add_place(self, place):
         if place not in self.places:

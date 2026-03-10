@@ -19,6 +19,7 @@ class HBnBFacade:
     def create_user(self, user_data):
         """Create a new user with the provided data."""
         user = User(**user_data)
+        user.hash_password(user_data['password'])
         self.user_repo.add(user)
         return user
 

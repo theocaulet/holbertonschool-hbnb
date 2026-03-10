@@ -29,7 +29,6 @@ class UserList(Resource):
 
         try:
             new_user = facade.create_user(user_data)
-            new_user.hash_password(user_data['password'])
             return {'id': new_user.id, 'message':
                     'User successfully created'}, 201
         except ValueError as e:
