@@ -1,18 +1,36 @@
 from .user import User
 from .base_model import BaseModel
+from app import db
 
 
 class Place(BaseModel):
     """Place model for the HBnB application."""
+    __tablename__ = 'places'
+
+    title = db.Column(db.String(100), nullable=False)
+    description = db.Column(db.String(500), nullable=True)
+    price = db.Column(db.Float, nullable=False)
+    latitude = db.Column(db.Float, nullable=False)
+    longitude = db.Column(db.Float, nullable=False)
+    owner_id = db.Column(db.String(36), db.ForeignKey('users.id'),
+                         nullable=False)
 
     def __init__(self, title: str, description: str, price: float,
-                 latitude: float, longitude: float, owner: User):
+                 latitude: float, longitude: float, owner_id: str):
         """Initialize a Place instance."""
         super().__init__()
 
-        # Initialize collections first
-        self._reviews = []
-        self._amenities = []
+        if not title or len(title) > 100:
+            raise ValueError("Title is required "
+                             "and must be 100 characters or less")
+        if not isinstance(price, (int, float)) or price <= 0:
+            raise ValueError("Price must be a positive number")
+        if (not isinstance(latitude, (int, float)) or
+                not (-90.0 <= latitude <= 90.0)):
+            raise ValueError("Latitude must be between -90.0 and 90.0")
+        if (not isinstance(longitude, (int, float)) or
+                not (-180.0 <= longitude <= 180.0)):
+            raise ValueError("Longitude must be between -180.0 and 180.0")
 
         # Set values through properties to trigger validation
         self.title = title
@@ -20,7 +38,7 @@ class Place(BaseModel):
         self.price = price
         self.latitude = latitude
         self.longitude = longitude
-        self.owner = owner
+        self.owner_id = owner_id
 
     @property
     def title(self):
@@ -31,8 +49,8 @@ class Place(BaseModel):
     def title(self, value):
         """Set the place title with validation."""
         if not value or len(value) > 100:
-            raise ValueError(
-                "Title is required and must be 100 characters or less")
+            raise ValueError("Title is required "
+                             "and must be 100 characters or less")
         self._title = value
 
     @property
@@ -58,7 +76,7 @@ class Place(BaseModel):
     @price.setter
     def price(self, value):
         """Set the place price with validation."""
-        if not isinstance(value, (int, float)) or value <= 0:
+        if not isinstance(value, (int, float)) or price <= 0:
             raise ValueError("Price must be a positive number")
         self._price = float(value)
 
