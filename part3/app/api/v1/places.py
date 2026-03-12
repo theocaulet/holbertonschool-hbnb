@@ -1,5 +1,5 @@
 from flask_restx import Namespace, Resource, fields
-from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask_jwt_extended import jwt_required, get_jwt, get_jwt_identity
 from app.services import facade
 
 api = Namespace('places', description='Place operations')
@@ -74,15 +74,17 @@ class PlaceResource(Resource):
     @api.response(400, 'Invalid input data')
     @api.response(401, 'Authentication required')
     def put(self, place_id):
-        """Update a place's information (Only owner can modify)"""
-        current_user = get_jwt_identity()
-        place = facade.get_place(place_id)
+        """Update a place (Owner or Admin only)"""
+        claims = get_jwt()
+        current_user_id = get_jwt_identity()
+        is_admin = claims.get('is_admin', False)
 
+        place = facade.get_place(place_id)
         if not place:
             return {'error': 'Place not found'}, 404
 
-        # Only the owner can modify the place
-        if place.owner.id != current_user:
+        # Admin bypasses ownership check
+        if not is_admin and place.owner.id != current_user_id:
             return {'error': 'Unauthorized action'}, 403
 
         place_data = api.payload
