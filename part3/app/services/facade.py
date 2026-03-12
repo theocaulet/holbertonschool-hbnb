@@ -1,3 +1,4 @@
+from app.services.repositories.user_repository import UserRepository
 from app.persistence.repository import InMemoryRepository, SQLAlchemyRepository
 from app.models import User, Amenity, Place, Review
 
@@ -10,10 +11,10 @@ class HBnBFacade:
 
     def __init__(self):
         """Initialize the HBnBFacade with in-memory repositories."""
-        self.user_repo = InMemoryRepository()
-        self.amenity_repo = InMemoryRepository()
-        self.place_repo = InMemoryRepository()
-        self.review_repo = InMemoryRepository()
+        self.user_repo = UserRepository()
+        self.amenity_repo = SQLAlchemyRepository(Amenity)
+        self.place_repo = SQLAlchemyRepository(Place)
+        self.review_repo = SQLAlchemyRepository(Review)
 
     # region User Management
     def create_user(self, user_data):
@@ -29,9 +30,7 @@ class HBnBFacade:
 
     def get_user_by_email(self, email):
         """Retrieve a user by their email address."""
-        users = [user for user in self.user_repo.get_all()
-                 if user.email == email]
-        return users[0] if users else None
+        return self.user_repo.get_user_by_email(email)
 
     def get_all_users(self):
         """Retrieve all users from the repository."""

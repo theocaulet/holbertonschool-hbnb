@@ -16,7 +16,7 @@ from app.api.v1.amenities import api as amenities_ns
 from app.api.v1.auth import api as auth_ns
 
 
-def create_app(config_class="config.DevelopmentConfig"):
+def create_app(config_class='config.DevelopmentConfig'):
     app = Flask(__name__)
     app.config.from_object(config_class)
     bcrypt.init_app(app)
