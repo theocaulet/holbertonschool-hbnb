@@ -1,4 +1,7 @@
 from app.services.repositories.user_repository import UserRepository
+from app.services.repositories.place_repository import PlaceRepository
+from app.services.repositories.review_repository import ReviewRepository
+from app.services.repositories.amenity_repository import AmenityRepository
 from app.persistence.repository import InMemoryRepository, SQLAlchemyRepository
 from app.models import User, Amenity, Place, Review
 
@@ -12,9 +15,9 @@ class HBnBFacade:
     def __init__(self):
         """Initialize the HBnBFacade with in-memory repositories."""
         self.user_repo = UserRepository()
-        self.amenity_repo = SQLAlchemyRepository(Amenity)
-        self.place_repo = SQLAlchemyRepository(Place)
-        self.review_repo = SQLAlchemyRepository(Review)
+        self.amenity_repo = AmenityRepository()
+        self.place_repo = PlaceRepository()
+        self.review_repo = ReviewRepository()
 
     # region User Management
     def create_user(self, user_data):
@@ -59,8 +62,6 @@ class HBnBFacade:
 
         # Create place data with owner object instead of owner_id
         place_data_copy = place_data.copy()
-        place_data_copy['owner'] = owner
-        place_data_copy.pop('owner_id', None)
 
         # Extract amenities to add them separately after place creation
         amenities_list = place_data_copy.pop('amenities', [])
@@ -99,6 +100,11 @@ class HBnBFacade:
 
         place.update(place_data)
         return place
+
+    def delete_place(self, place_id):
+        """Delete a place by its ID."""
+        self.place_repo.delete(place_id)
+        return True
     # endregion
 
     # region Review Management
@@ -125,7 +131,7 @@ class HBnBFacade:
         text = review_data.get('text')
         rating = review_data.get('rating')
 
-        review = Review(text, rating, place, user)
+        review = Review(text, rating, place.id, user.id)
         self.review_repo.add(review)
 
         # Add review to place
@@ -159,11 +165,6 @@ class HBnBFacade:
         if not review:
             return False
 
-        # Remove review from place
-        place = self.get_place(review.place_id)
-        if place and review in place.reviews:
-            place.reviews.remove(review)
-
         self.review_repo.delete(review_id)
         return True
     # endregion
@@ -196,4 +197,9 @@ class HBnBFacade:
             amenity.name = amenity_data["name"]
         self.amenity_repo.update(amenity_id, amenity_data)
         return amenity
+
+    def delete_amenity(self, amenity_id):
+        """Delete an amenity by its ID."""
+        self.amenity_repo.delete(amenity_id)
+        return True
     # endregion
