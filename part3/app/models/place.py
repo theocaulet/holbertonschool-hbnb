@@ -11,6 +11,7 @@ class Place(BaseModel):
     price = db.Column(db.Float, nullable=False)
     latitude = db.Column(db.Float, nullable=False)
     longitude = db.Column(db.Float, nullable=False)
+    owner_id = db.Column(db.String(36), nullable=False)
 
     def __init__(self, title: str, description: str, price: float,
                  latitude: float, longitude: float, owner_id: str):
@@ -53,3 +54,7 @@ class Place(BaseModel):
     def __str__(self):
         """String representation of place."""
         return f"Place({self.title} - ${self.price}/night)"
+
+    def add_review(self, review):
+        """Add a review"""
+        pass
