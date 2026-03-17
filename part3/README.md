@@ -1,8 +1,23 @@
-# HBnB API - Part 2
+# HBnB API - Part 3
 
 ## Description
 
-HBnB API is a modern REST API built with Flask and Flask-RESTX for an Airbnb-like rental platform. This API provides complete management of users, places, reviews, and amenities with integrated Swagger documentation.
+HBnB API is a modern REST API built with Flask and Flask-RESTX for an Airbnb-like rental platform. This part adds **JWT authentication**, **admin role-based access control (RBAC)**, and **SQLAlchemy ORM persistence** backed by a SQLite database.
+
+## Database Schema
+
+See [`scripts/er_diagram.md`](scripts/er_diagram.md) for the full **Entity-Relationship diagram** (Mermaid.js).
+
+Quick overview:
+
+```mermaid
+erDiagram
+    USER ||--o{ PLACE        : "owns"
+    USER ||--o{ REVIEW       : "writes"
+    PLACE ||--o{ REVIEW      : "receives"
+    PLACE ||--o{ PLACE_AMENITY : "has"
+    AMENITY ||--o{ PLACE_AMENITY : "linked to"
+```
 
 ## Architecture
 
@@ -11,21 +26,27 @@ The project uses a layered architecture with the Facade pattern:
 ```
 app/
 ├── __init__.py              # Flask configuration and initialization
-├── api/v1/                  # REST API endpoints
+├── api/v1/                  # REST API endpoints (JWT-secured)
+│   ├── auth.py             # JWT login endpoint
 │   ├── users.py            # User management
 │   ├── places.py           # Place management
 │   ├── reviews.py          # Review management
 │   └── amenities.py        # Amenity management
-├── models/                  # Data models
-│   ├── base_model.py       # Base class for all models
-│   ├── user.py             # User model
-│   ├── place.py            # Place model
-│   ├── review.py           # Review model
-│   └── amenity.py          # Amenity model
+├── models/                  # SQLAlchemy ORM models
+│   ├── base_model.py       # Base class (id, created_at, updated_at)
+│   ├── user.py             # User model (bcrypt password, is_admin)
+│   ├── place.py            # Place model (owner FK, amenities M:N)
+│   ├── review.py           # Review model (place FK, user FK)
+│   └── amenity.py          # Amenity model + place_amenity join table
 ├── persistence/             # Persistence layer
-│   └── repository.py       # In-memory repository
+│   └── repository.py       # SQLAlchemyRepository
 └── services/               # Business services
     └── facade.py           # Facade for data access
+
+scripts/
+├── schema.sql              # CREATE TABLE statements
+├── initial_data.sql        # Admin user + default amenities
+└── er_diagram.md           # Mermaid.js ER diagram
 ```
 
 ## Features
@@ -57,6 +78,10 @@ app/
 - **Python 3.8+**
 - **Flask 3.0.2** - Web framework
 - **Flask-RESTX** - Extension for REST API and Swagger documentation
+- **Flask-JWT-Extended** - JWT authentication (`@jwt_required`, admin claims)
+- **Flask-Bcrypt** - Secure password hashing
+- **Flask-SQLAlchemy** - ORM for SQLite persistence
+- **SQLite** - Embedded database (`instance/development.db`)
 - **UUID** - Unique identifier generation
 - **Datetime** - Timestamp management
 
@@ -64,10 +89,10 @@ app/
 
 ### 1. Prerequisites
 ```bash
-python3 -m venv .venv
-source .venv/bin/activate  # Linux/Mac
+python3 -m venv hbnb_env
+source hbnb_env/bin/activate   # Linux/Mac
 # or
-.venv\Scripts\activate     # Windows
+hbnb_env\Scripts\activate      # Windows
 ```
 
 ### 2. Dependencies Installation
@@ -75,11 +100,26 @@ source .venv/bin/activate  # Linux/Mac
 pip install -r requirements.txt
 ```
 
-### 3. Configuration
+### 3. Database Initialisation (optional — SQLAlchemy auto-creates tables)
+```bash
+# Create schema + seed admin user and default amenities
+sqlite3 instance/development.db < scripts/schema.sql
+sqlite3 instance/development.db < scripts/initial_data.sql
+```
+
+Default admin credentials seeded by `initial_data.sql`:
+
+| Field | Value |
+|---|---|
+| email | `admin@hbnb.io` |
+| password | `admin1234` |
+| is_admin | `true` |
+
+### 4. Configuration
 The `config.py` file contains necessary configurations:
 - Development configuration with DEBUG enabled
-- Environment variable management
-- Configurable secret key
+- SQLite URI: `sqlite:///development.db`
+- JWT secret key via environment variable or default fallback
 
 ## Server Startup
 
@@ -174,10 +214,10 @@ curl -X POST http://localhost:5000/api/v1/places \
 
 ## Future Enhancements
 
-- [ ] Database integration (SQLAlchemy)
-- [ ] Authentication and authorization
+- [x] Database integration (SQLAlchemy + SQLite)
+- [x] Authentication and authorization (JWT + bcrypt)
 - [ ] Image upload for places
-- [ ] Reservation system
+- [ ] Reservation / Booking system
 - [ ] Advanced filters and search
 - [ ] Pagination
 - [ ] Redis cache

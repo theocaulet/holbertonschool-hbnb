@@ -1,6 +1,17 @@
-from app import db
 from app.models.base_model import BaseModel
+from app import db
+
 """Amenity model for HBNB application."""
+
+
+# Association table for many-to-many: Place ↔ Amenity
+place_amenity = db.Table(
+    'place_amenity',
+    db.Column('place_id', db.String(36), db.ForeignKey(
+        'places.id'), primary_key=True),
+    db.Column('amenity_id', db.String(36), db.ForeignKey(
+        'amenities.id'), primary_key=True)
+)
 
 
 class Amenity(BaseModel):
@@ -8,15 +19,6 @@ class Amenity(BaseModel):
     __tablename__ = 'amenities'
 
     name = db.Column(db.String(50), nullable=False)
-
-    def __init__(self, name):
-        """Initialize an Amenity instance."""
-        super().__init__()
-        if not isinstance(name, str):
-            raise ValueError("Name must be a string")
-        if len(name) > 50:
-            raise ValueError("Name must be a maximum of 50 characters")
-        self.name = name
 
     def to_dict(self):
         """Convert amenity to dictionary representation."""
