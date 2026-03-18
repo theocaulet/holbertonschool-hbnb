@@ -93,3 +93,20 @@ class PlaceResource(Resource):
             return updated_place.to_dict(), 200
         except ValueError as e:
             return {'error': str(e)}, 400
+
+    @api.response(204, 'Place deleted sucessfully')
+    @api.response(404, 'Place not found')
+    @jwt_required()
+    def delete(self, place_id):
+        """Delete a place"""
+        current_user_id = get_jwt_identity()
+        claims = get_jwt()
+        is_admin = claims.get('is_admin', False)
+        place = facade.get_place(place_id)
+        if not place:
+            return {'error': 'Place not found'}, 404
+
+        if not is_admin and place.owner_id != current_user_id:
+            return {'error': 'Unauthorized action'}, 403
+        facade.delete_place(place_id)
+        return {'message': 'Place deleted sucessfully'}, 200

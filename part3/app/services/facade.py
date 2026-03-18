@@ -89,14 +89,25 @@ class HBnBFacade:
         if not place:
             return None
 
+        place_data = place_data.copy()
+
         # If updating owner, validate the new owner exists
         if 'owner_id' in place_data:
             new_owner = self.get_user(place_data['owner_id'])
             if not new_owner:
                 raise ValueError("Owner not found")
-            place_data = place_data.copy()
             place_data['owner'] = new_owner
             place_data.pop('owner_id')
+
+        # Convert amenity IDs to Amenity objects
+        if 'amenities' in place_data:
+            amenity_objects = []
+            for amenity_id in place_data['amenities']:
+                amenity = self.get_amenity(amenity_id)
+                if not amenity:
+                    raise ValueError(f"Amenity {amenity_id} not found")
+                amenity_objects.append(amenity)
+            place_data['amenities'] = amenity_objects
 
         place.update(place_data)
         return place
@@ -131,11 +142,8 @@ class HBnBFacade:
         text = review_data.get('text')
         rating = review_data.get('rating')
 
-        review = Review(text, rating, place.id, user.id)
+        review = Review(text=text, rating=rating, place_id=place.id, user_id=user.id)
         self.review_repo.add(review)
-
-        # Add review to place
-        place.add_review(review)
 
         return review
 
