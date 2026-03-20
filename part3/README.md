@@ -164,12 +164,13 @@ Once the server is running, Swagger documentation is available at:
 
 ## Testing
 
-Run tests:
+Run tests (after activating your virtual environment and installing dependencies):
 ```bash
-python -m pytest
-# or
-python test_app.py
-python test_hbnb.py
+python3 test_app.py
+python3 -m unittest test_hbnb.py
+
+# Optional: run all unittest suites in the folder
+python3 -m unittest discover -p "test*.py"
 ```
 
 ## Usage Examples
