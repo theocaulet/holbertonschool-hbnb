@@ -36,7 +36,12 @@ class UserList(Resource):
 
         try:
             new_user = facade.create_user(user_data)
-            return {'id': new_user.id, 'message': 'User successfully created'}, 201
+            return {
+                'id': new_user.id,
+                'first_name': new_user.first_name,
+                'last_name': new_user.last_name,
+                'email': new_user.email
+            }, 201
         except ValueError as e:
             return {'error': str(e)}, 400
 

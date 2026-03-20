@@ -17,17 +17,11 @@ class AmenityList(Resource):
         amenities = facade.get_all_amenities()
         return [{'id': a.id, 'name': a.name} for a in amenities], 200
 
-    @jwt_required()
     @api.expect(amenity_model, validate=True)
     @api.response(201, 'Amenity successfully created')
     @api.response(400, 'Invalid input data')
-    @api.response(403, 'Admin privileges required')
     def post(self):
-        """Create a new amenity (ADMIN only)"""
-        claims = get_jwt()
-        if not claims.get('is_admin', False):
-            return {'error': 'Admin privileges required'}, 403
-
+        """Create a new amenity (PUBLIC)"""
         amenity_data = api.payload
         try:
             new_amenity = facade.create_amenity(amenity_data)
