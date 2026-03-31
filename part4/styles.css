@@ -25,3 +25,64 @@ nav a {
 main {
     padding: 2rem;
 }
+
+footer {
+    background-color: #333;
+    color: #fff;
+    padding: 2rem;
+    text-align: center;
+}
+
+.logo {
+    height: auto;
+    width: 150px;
+}
+
+.login-button {
+    padding: 1rem 2rem;
+    background-color: #0000FF;
+    color: #fff;
+    border-radius: 10px;
+    border: none;
+    text-decoration: none;
+}
+
+.place-card {
+    margin: 20px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    background-color: #F52727;
+}
+
+.details-button {
+    padding: 1rem 2rem;
+    background-color: #0000FF;
+    color: #fff;
+    border-radius: 10px;
+    border: none;
+    text-decoration: none;
+}
+
+.review-card {
+    margin: 20px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+}
+
+.place-details {
+    margin: 20px;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    background-color: #27B7F5;
+}
+
+.place-info {
+    margin: 20px;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    background-color: #F52727;
+}
