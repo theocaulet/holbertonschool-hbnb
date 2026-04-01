@@ -60,4 +60,70 @@ document.addEventListener('DOMContentLoaded', () => {
         })
       })
   }
+  if (window.location.pathname.includes('place.html')) {
+    const params = new URLSearchParams(window.location.search);
+    const placeId = params.get('id');
+    fetch(`http://127.0.0.1:5000/api/v1/places/${placeId}`)
+      .then(response => response.json())
+      .then(data => {
+        const placeDetails = document.getElementById('place-details');
+        placeDetails.innerHTML = `
+          <h2>${data.name}</h2>
+          <p>${data.description}</p>
+          <p>Price: $${data.price_by_night} per night</p>
+        `;
+        const token = getCookie('token');
+        if (token) {
+          document.getElementById('add-review').style.display = 'block';
+        }
+    })
+    fetch(`http://127.0.0.1:5000/api/v1/reviews/places/${placeId}`)
+      .then(response => response.json())
+      .then(data => {
+        const reviewsList = document.getElementById('reviews');
+        data.forEach(review => {
+          const reviewItem = document.createElement('div');
+          reviewItem.className = 'review-card';
+          reviewItem.innerHTML = `
+            <p>${review.description}</p>
+            <p>Rating: ${review.rating}/5</p>
+          `;
+          reviewsList.appendChild(reviewItem);
+        })
+      })
+  }
+  if (window.location.pathname.includes('add_review.html')) {
+    const token = getCookie('token');
+    if (!token) {
+      window.location.href = 'login.html';
+    }
+    const params = new URLSearchParams(window.location.search);
+    const placeId = params.get('id');
+    fetch(`http://127.0.0.1:5000/api/v1/places/${placeId}`)
+      .then(response => response.json())
+      .then(data => {
+        document.getElementById('place-name').textContent = data.name;
+      })
+    document.getElementById('review-form').addEventListener('submit', (event) => {
+      event.preventDefault();
+      const review = document.getElementById('review').value;
+      const rating = document.getElementById('rating').value;
+      fetch(`http://127.0.0.1:5000/api/v1/reviews`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          text: review,
+          rating: parseInt(rating),
+          place_id: placeId
+        })
+      })
+        .then(response => response.json())
+        .then(data => {
+          window.location.href = `place.html?id=${placeId}`;
+        })
+    });
+  }
 });
