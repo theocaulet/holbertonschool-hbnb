@@ -11,26 +11,25 @@ function getCookie(name) {
 
 document.addEventListener('DOMContentLoaded', () => {
   if (window.location.pathname.includes('login.html')) {
-    document.getElementById('login-form').addEventListener('submit', (event) => {
+    document.getElementById('login-form').addEventListener('submit', async (event) => {
       event.preventDefault();
       const email = document.getElementById('email').value;
       const password = document.getElementById('password').value;
 
-      fetch('http://127.0.0.1:5000/api/v1/auth/login', {
+      const response = await fetch('http://127.0.0.1:5000/api/v1/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({
-          email: email,
-          password: password
-        })
-      })
-        .then(response => response.json())
-        .then(data => {
-          document.cookie = `token=${data.access_token}`;
-          window.location.href = 'index.html';
-        })
+        body: JSON.stringify({ email, password })
+      });
+      if (response.ok) {
+        const data = await response.json();
+        document.cookie = `token=${data.access_token}; path=/`;
+        window.location.href = 'index.html';
+      } else {
+        alert('Login failed: ' + response.statusText);
+      }
     });
   }
   if (window.location.pathname.includes('index.html')) {
@@ -38,7 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const loginLink = document.getElementById('login-link');
     if (token) {
       loginLink.textContent = 'Logout';
-      loginLink.href = '#'; 
+      loginLink.href = '#';
     } else {
       loginLink.textContent = 'Login';
       loginLink.href = 'login.html';
@@ -86,7 +85,7 @@ document.addEventListener('DOMContentLoaded', () => {
           addReviewButton.textContent = 'Add a Review';
           document.getElementById('place-details').appendChild(addReviewButton);
         }
-    })
+      })
     fetch(`http://127.0.0.1:5000/api/v1/reviews/places/${placeId}`)
       .then(response => response.json())
       .then(data => {
