@@ -56,10 +56,10 @@ footer {
 }
 
 .details-button {
-    padding: 1rem 2rem;
+    padding: 0.5rem 1rem;
     background-color: #0000FF;
-    color: #fff;
-    border-radius: 10px;
+    color: #0f0707;
+    border-radius: 5px;
     border: none;
     text-decoration: none;
 }
