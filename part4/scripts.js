@@ -51,9 +51,9 @@ document.addEventListener('DOMContentLoaded', () => {
           const card = document.createElement('div');
           card.className = 'place-card';
           card.innerHTML = `
-            <h2>${place.name}</h2>
+            <h2>${place.title}</h2>
             <p>${place.description}</p>
-            <p>Price: $${place.price_by_night} per night</p>
+            <p>Price: $${place.price} per night</p>
             <a href="place.html?id=${place.id}" class="details-button">View Details</a>
           `;
           placesList.appendChild(card);
@@ -68,9 +68,11 @@ document.addEventListener('DOMContentLoaded', () => {
       .then(data => {
         const placeDetails = document.getElementById('place-details');
         placeDetails.innerHTML = `
-          <h2>${data.name}</h2>
+          <h2>${data.title}</h2>
           <p>${data.description}</p>
-          <p>Price: $${data.price_by_night} per night</p>
+          <p>Price: $${data.price} per night</p>
+          <p>Host: ${data.owner.first_name} ${data.owner.last_name}</p>
+          <p>Amenities: ${data.amenities.map(a => a.name).join(', ')}</p>
         `;
         const token = getCookie('token');
         if (token) {
@@ -85,7 +87,8 @@ document.addEventListener('DOMContentLoaded', () => {
           const reviewItem = document.createElement('div');
           reviewItem.className = 'review-card';
           reviewItem.innerHTML = `
-            <p>${review.description}</p>
+            <p>${review.text}</p>
+            <p>By: ${review.user.first_name} ${review.user.last_name}</p>
             <p>Rating: ${review.rating}/5</p>
           `;
           reviewsList.appendChild(reviewItem);
@@ -102,7 +105,7 @@ document.addEventListener('DOMContentLoaded', () => {
     fetch(`http://127.0.0.1:5000/api/v1/places/${placeId}`)
       .then(response => response.json())
       .then(data => {
-        document.getElementById('place-name').textContent = data.name;
+        document.getElementById('place-name').textContent = data.title;
       })
     document.getElementById('review-form').addEventListener('submit', (event) => {
       event.preventDefault();
