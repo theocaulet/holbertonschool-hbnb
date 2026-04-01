@@ -68,15 +68,23 @@ document.addEventListener('DOMContentLoaded', () => {
       .then(data => {
         const placeDetails = document.getElementById('place-details');
         placeDetails.innerHTML = `
+        <div class="place-details">
           <h2>${data.title}</h2>
           <p>${data.description}</p>
+        </div>
+        <div class="place-info">
           <p>Price: $${data.price} per night</p>
           <p>Host: ${data.owner.first_name} ${data.owner.last_name}</p>
           <p>Amenities: ${data.amenities.map(a => a.name).join(', ')}</p>
+        </div>
         `;
         const token = getCookie('token');
         if (token) {
-          document.getElementById('add-review').style.display = 'block';
+          const addReviewButton = document.createElement('a');
+          addReviewButton.href = `add_review.html?id=${placeId}`;
+          addReviewButton.className = 'details-button';
+          addReviewButton.textContent = 'Add a Review';
+          document.getElementById('place-details').appendChild(addReviewButton);
         }
     })
     fetch(`http://127.0.0.1:5000/api/v1/reviews/places/${placeId}`)
