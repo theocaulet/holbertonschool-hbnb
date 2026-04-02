@@ -3,11 +3,14 @@ from flask_restx import Api
 from flask_bcrypt import Bcrypt
 from flask_sqlalchemy import SQLAlchemy
 from flask_jwt_extended import JWTManager
+from flask_cors import CORS
 
 
 bcrypt = Bcrypt()
 db = SQLAlchemy()
 jwt = JWTManager()
+
+
 
 from app.api.v1.users import api as users_ns
 from app.api.v1.places import api as places_ns
@@ -19,6 +22,7 @@ from app.api.v1.auth import api as auth_ns
 def create_app(config_class='config.DevelopmentConfig'):
     app = Flask(__name__)
     app.config.from_object(config_class)
+    CORS(app, resources={r"/api/*": {"origins": "*"}})
     bcrypt.init_app(app)
     db.init_app(app)
     jwt.init_app(app)
