@@ -1,10 +1,8 @@
-# HBnB - Part 4: Web Front-End Interface
+# HBnB Project
 
-## Description
+## Overview
 
-Part 4 of the HBnB project focuses on building a web front-end interface that communicates with the backend through a REST API. The interface allows users to browse places, log in, and submit reviews.
-
----
+HBnB is an Airbnb-like application built in four parts. Each part adds a new layer to the project: architecture, REST API, persistence and authentication, then a web front-end that consumes the API.
 
 ## Project Structure
 
@@ -16,226 +14,129 @@ holbertonschool-hbnb/
 ├── part2/
 ├── part3/
 └── part4/
-	├── index.html          # Main page - List of places
-	├── login.html          # Login page
-	├── place.html          # Place details page
-	├── add_review.html     # Add a review page
-	├── styles.css          # CSS styles
-	├── scripts.js          # JavaScript
-	├── images/             # Front-end static images
-	└── backend/            # Flask REST API for Part 4
-		├── run.py
-		├── requirements.txt
-		└── app/
 ```
 
----
+## Parts
 
-## HTML Pages
+### Part 1 - UML and Architecture Design
 
-### 1. `index.html` - List of Places
-- Displays all places as cards using the `.place-card` class
-- Each card contains the place name, price, and a "View Details" button
-- Price filter (All, 10, 50, 100)
-- Login/Logout link in the header
+This part contains the design documents for the HBnB application. It focuses on the overall architecture before implementation.
 
-### 2. `login.html` - Login Form
-- Form with email and password fields
-- Redirects to `index.html` after successful login
-- Error message if credentials are incorrect
+Included deliverables:
+- Class diagram
+- Package diagram
+- Sequence diagram
+- UML documentation
 
-### 3. `place.html` - Place Details
-- Displays detailed information about a place (title, description, price, host, amenities)
-- Lists existing reviews
-- Review form visible only if the user is authenticated
+Main purpose:
+- Define the entities, relationships, and interactions in the system
+- Prepare the project structure for the API and persistence layers
 
-### 4. `add_review.html` - Review Form
-- Accessible only to authenticated users
-- Displays the name of the place being reviewed
-- Form with a text field and rating (0-5)
+### Part 2 - REST API with In-Memory Storage
 
----
+This part introduces the first working backend using Flask and Flask-RESTX with an in-memory repository.
 
-## CSS
+Main features:
+- REST endpoints for users, places, reviews, and amenities
+- Service layer with a Facade pattern
+- Input validation and CRUD operations
+- Swagger documentation generated from the API
 
-### Main Classes
+Core structure:
+- `app/api/v1/`: API routes
+- `app/models/`: domain models
+- `app/persistence/`: repository implementation
+- `app/services/`: facade and business logic
 
-| Class | Description |
-|-------|-------------|
-| `.logo` | Site logo (width: 150px) |
-| `.login-button` | Login button in the header |
-| `.place-card` | Place card (margin: 20px, padding: 20px, border-radius: 10px) |
-| `.details-button` | "View Details" button on each card |
-| `.place-details` | Main section of place details |
-| `.place-info` | Secondary information section of the place |
-| `.review-card` | Review card (margin: 20px, padding: 20px, border-radius: 10px) |
+### Part 3 - Authentication and Database Persistence
 
-### Required Fixed Parameters
-- **Margin**: 20px for cards
-- **Padding**: 20px for cards
-- **Border**: 1px solid #ddd for cards
-- **Border radius**: 10px for cards
+This part upgrades the backend with JWT authentication, role-based access control, and SQLAlchemy persistence.
 
----
+Main features:
+- JWT login endpoint
+- Admin role handling
+- SQLAlchemy models and SQLite database
+- Schema and seed scripts
+- Improved security for protected routes
 
-## JavaScript - `scripts.js`
+Core structure:
+- `app/api/v1/auth.py`: authentication routes
+- `app/models/`: SQLAlchemy models
+- `app/persistence/`: SQLAlchemy repository
+- `scripts/`: schema, seed data, and ER diagram
 
-### Main Functions
+### Part 4 - Web Front-End Interface
 
-#### Authentication
-```javascript
-// Get a cookie value by its name
-function getCookie(name)
+This part adds the browser-based user interface that communicates with the backend through the REST API.
 
-// Check authentication on index.html
-function checkAuthentication()
+Main features:
+- Browse places as cards
+- Log in and maintain authentication with cookies / token handling
+- View place details and reviews
+- Submit reviews from the front-end
+- Filter places by price without reloading the page
 
-// Check authentication on place.html
-function checkAuthenticationPlace()
+Front-end files:
+- `index.html`
+- `login.html`
+- `place.html`
+- `add_review.html`
+- `styles.css`
+- `scripts.js`
 
-// Check authentication on add_review.html
-function checkAuthenticationAddReview()
+Backend for Part 4:
+- Located in `part4/backend/`
+- Reuses the authenticated API from Part 3
+
+## Part 4 Structure
+
+```
+part4/
+├── add_review.html
+├── backend/
+│   ├── app/
+│   ├── config.py
+│   ├── instance/
+│   ├── requirements.txt
+│   ├── run.py
+│   └── scripts/
+├── images/
+├── index.html
+├── login.html
+├── place.html
+├── scripts.js
+└── styles.css
 ```
 
-#### Places
-```javascript
-// Fetch the list of places from the API
-async function fetchPlaces(token)
+## Running the Project
 
-// Display places as cards
-function displayPlaces(places)
+### Part 3 / Part 4 backend
 
-// Fetch details of a place
-async function fetchPlacesDetails(token, placeId)
-
-// Display place details
-function displayPlaceDetails(place)
-```
-
-#### Reviews
-```javascript
-// Display reviews for a place
-function displayReviews(reviews)
-
-// Submit a review
-async function submitReview(token, placeId, reviewText, rating)
-
-// Handle the API response
-function handleResponse(response)
-```
-
-#### Utilities
-```javascript
-// Extract place ID from the URL
-function getPlaceIdFromURL()
-```
-
----
-
-## API Endpoints Used
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/api/v1/auth/login` | User login |
-| GET | `/api/v1/places/` | List of places |
-| GET | `/api/v1/places/<id>` | Place details |
-| GET | `/api/v1/reviews/places/<id>` | Reviews for a place |
-| POST | `/api/v1/reviews/` | Submit a review |
-
----
-
-## Installation and Setup
-
-### Prerequisites
-- HBnB backend running on `http://127.0.0.1:5000`
-- Python 3 installed
-
-### Steps
-
-**1. Start the backend**
 ```bash
 cd part4/backend
 python3 run.py
 ```
 
-**2. Start the frontend server**
+### Part 4 front-end server
+
 ```bash
 cd part4
 python3 -m http.server 8000
 ```
 
-**3. Open in the browser**
-```
+Then open:
+
+```text
 http://127.0.0.1:8000/index.html
 ```
 
----
+## Notes
 
-## Step-by-Step Testing
-
-### Step 1 - Verify the backend is running
-Open in the browser:
-```
-http://127.0.0.1:5000/api/v1/places/
-```
-You should see a list of places in JSON format.
-
-### Step 2 - Test `index.html`
-1. Open `http://127.0.0.1:8000/index.html`
-2. Verify that the **Login** link appears in the header
-3. Verify that the list of places **does not display** because you are not logged in
-
-### Step 3 - Test `login.html`
-1. Click on **Login**
-2. Enter **invalid** credentials → you should see an alert `"Login failed"`
-3. Enter **valid** credentials → you should be redirected to `index.html`
-4. Verify that the **Login** link is now **hidden**
-5. Verify that the list of places **displays**
-
-### Step 4 - Test the price filter
-1. On `index.html`, select **10** in the filter → only places under $10 are displayed
-2. Select **50** → only places under $50 are displayed
-3. Select **100** → only places under $100 are displayed
-4. Select **All** → all places reappear
-5. Filtering works **without page reload**
-
-### Step 5 - Test `place.html`
-1. Click on **"View Details"** for a place
-2. Verify the URL contains the place ID: `place.html?id=...`
-3. Verify that the **details** display (title, description, price, host, amenities)
-4. Verify that **reviews** display if any exist
-5. Verify that the review form **appears** because you are logged in
-
-### Step 6 - Test submitting a review
-1. On `place.html`, fill in the review form
-2. Click **Submit**
-3. You should see the message `"Review submitted successfully!"`
-4. Verify that the form **clears** automatically
-
-### Step 7 - Test `add_review.html`
-1. Open `http://127.0.0.1:8000/add_review.html` without being logged in
-2. You should be **redirected** to `index.html`
-3. Log in and try again from a place details page
-4. The place name should display at the top of the page
-
-### Step 8 - Test logout / token expiration
-1. The JWT token **expires** after a certain time
-2. If you receive a **401 Unauthorized** error, log in again
-3. After logging in again, all features should work correctly
-
----
-
-## Known Issues and Solutions
-
-| Issue | Cause | Solution |
-|-------|-------|----------|
-| Places don't display | User not logged in | Log in first |
-| 401 Unauthorized error | JWT token expired | Log in again |
-| `place.html` doesn't load details | URL without `?id=...` | Access via "View Details" button |
-| Price filter doesn't work | URL without `index.html` | Use `http://127.0.0.1:8000/index.html` |
-| CORS error | URL without trailing `/` | Add `/` at the end of API endpoints |
-
----
+- Part 1 is documentation-only.
+- Part 2 provides the initial API and in-memory persistence.
+- Part 3 introduces authentication and database-backed persistence.
+- Part 4 adds the web interface on top of the backend.
 
 ## Author
+
 Project completed as part of the Holberton School curriculum.
