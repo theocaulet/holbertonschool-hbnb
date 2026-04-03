@@ -53,7 +53,7 @@ footer {
 button, .login-button, .details-button {
     padding: 0.5rem 1rem;
     font-size: 14px;
-    background-color: #1D3557;
+    background-color: #0c5789;
     color: #fff;
     border-radius: 5px;
     border: none;
@@ -63,31 +63,22 @@ button, .login-button, .details-button {
 }
 
 button:hover, .login-button:hover, .details-button:hover {
-    background-color: #457B9D;
+    background-color: #1D3557;
     transform: scale(1.05);
 }
 
-.card {
+.place-card, .place-details, .place-info, .review-card {
     margin: 20px auto;
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    transition: transform 0.2s ease;
     max-width: 600px;
     color: #fff;
+    transition: transform 0.2s ease;
 }
 
-.card:hover {
+.place-card:hover, .review-card:hover {
     transform: translateY(-3px);
-}
-
-.card h2 {
-    font-size: 1.2rem;
-    margin-bottom: 0.5rem;
-}
-
-.card p {
-    font-size: 0.95rem;
 }
 
 .place-card, .place-info {
@@ -113,4 +104,51 @@ button:hover, .login-button:hover, .details-button:hover {
         margin: 10px;
         padding: 10px;
     }
+}
+
+.place-card {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.place-card h2, .place-card p {
+    align-self: flex-start;
+    width: 100%;
+}
+
+#login-form {
+    max-width: 400px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+#login-form h2 {
+    margin-bottom: 1.5rem;
+    text-align: center;
+    color: #1D3557;
+}
+
+#login-form label {
+    display: block;
+    margin-bottom: 0.3rem;
+    font-weight: bold;
+}
+
+#login-form input {
+    width: 100%;
+    padding: 0.5rem;
+    margin-bottom: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+#login-form button {
+    width: 100%;
+    padding: 0.8rem;
+    background-color: #E63946;
+    font-size: 16px;
 }
