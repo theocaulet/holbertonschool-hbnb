@@ -38,10 +38,11 @@ function displayPlaces(places) {
     card.className = 'place-card';
     card.innerHTML = `
       <h2>${place.title}</h2>
-      <p>${place.description}</p>
       <p>Price: $${place.price} per night</p>
+      <p>${place.description}</p>
       <a href="place.html?id=${place.id}" class="details-button">View Details</a>
     `;
+    card.dataset.price = place.price;
     placesList.appendChild(card);
   })
 }
@@ -60,6 +61,15 @@ function checkAuthentificationPlace() {
   } else {
     addReviewSection.style.display = 'block';
     fetchPlacesDetails(token, placeId);
+    const reviewForm = document.getElementById('review-form');
+    if (reviewForm) {
+      reviewForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const reviewText = document.getElementById('review-text').value;
+        const rating = document.getElementById('rating').value;
+        await submitReview(token, placeId, reviewText, rating);
+      });
+    }
   }
 }
 
@@ -89,8 +99,8 @@ function displayPlaceDetails(place) {
         </div>
         <div class="place-info">
           <p>Price: $${place.price} per night</p>
-          <p>Host: ${place.owner.first_name} ${place.owner.last_name}</p>
-          <p>Amenities: ${place.amenities.map(a => a.name).join(', ')}</p>
+          <p>Host ID: ${place.owner_id}</p>
+          <p>Amenities: ${place.amenities ? place.amenities.map(a => a.name).join(', ') : 'None'}</p>
         </div>
         `;
 }
@@ -104,7 +114,7 @@ function displayReviews(reviews) {
     reviewItem.innerHTML = `
       <p>${review.text}</p>
       <p>Rating: ${review.rating}/5</p>
-      <p>By: ${review.user.first_name} ${review.user.last_name}</p>
+      <p>By: ${review.user_id}</p>
     `;
     reviewsList.appendChild(reviewItem);
   });
@@ -119,7 +129,7 @@ function checkAuthentificationAddReview() {
 }
 
 async function submitReview(token, placeId, reviewText, rating) {
-  const response = await fetch('http://127.0.0.1:5000/api/v1/reviews', {
+  const response = await fetch('http://127.0.0.1:5000/api/v1/reviews/', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -166,36 +176,41 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
   if (window.location.pathname.includes('index.html')) {
-    checkauthentification();
     const priceFilter = document.getElementById('price-filter');
+    priceFilter.innerHTML = `
+      <option value="all">All</option>
+      <option value="10">10</option>
+      <option value="50">50</option>
+      <option value="100">100</option>
+    `;
+    checkauthentification();
     priceFilter.addEventListener('change', (event) => {
       const selectedPrice = event.target.value;
       const placeCards = document.querySelectorAll('.place-card');
       placeCards.forEach(card => {
-        const priceText = card.querySelector('p:nth-child(3)').textContent;
-        const price = parseInt(priceText.match(/\$(\d+)/)[1]);
+        const price = parseFloat(card.dataset.price);
         if (selectedPrice === 'all' || price <= parseInt(selectedPrice)) {
           card.style.display = 'block';
         } else {
           card.style.display = 'none';
         }
-      })
-    })
-  }
-  if (window.location.pathname.includes('place.html')) {
-    checkAuthentificationPlace();
-  }
-  if (window.location.pathname.includes('add_review.html')) {
-    const token = checkAuthentificationAddReview();
-    const placeId = getPlaceIdFromURL();
-    const reviewForm = document.getElementById('review-form');
-    if (reviewForm) {
-      reviewForm.addEventListener('submit', async (event) => {
-        event.preventDefault();
-        const reviewText = document.getElementById('review').value;
-        const rating = document.getElementById('rating').value;
-        await submitReview(token, placeId, reviewText, rating);
       });
-    }
+    });
   }
+if (window.location.pathname.includes('place.html')) {
+  checkAuthentificationPlace();
+}
+if (window.location.pathname.includes('add_review.html')) {
+  const token = checkAuthentificationAddReview();
+  const placeId = getPlaceIdFromURL();
+  const reviewForm = document.getElementById('review-form');
+  if (reviewForm) {
+    reviewForm.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const reviewText = document.getElementById('review').value;
+      const rating = document.getElementById('rating').value;
+      await submitReview(token, placeId, reviewText, rating);
+    });
+  }
+}
 });
