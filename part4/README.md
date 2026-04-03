@@ -151,13 +151,13 @@ function getPlaceIdFromURL()
 
 **1. Start the backend**
 ```bash
-cd backend_folder
+cd backend
 python run.py
 ```
 
 **2. Start the frontend server**
 ```bash
-cd frontend_folder
+cd part4
 python3 -m http.server 8000
 ```
 
