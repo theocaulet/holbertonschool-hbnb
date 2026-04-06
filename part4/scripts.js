@@ -13,18 +13,21 @@ function checkauthentification() {
   const token = getCookie('token');
   const loginLink = document.getElementById('login-link');
   if (!token) {
-    loginLink.style.display = 'block';
+    window.location.href = 'login.html';
+    return null;
   } else {
-    loginLink.style.display = 'none';
+    if (loginLink) {
+      loginLink.style.display = 'none';
+    }
     fetchPlaces(token);
+    return token;
   }
 }
 
 async function fetchPlaces(token) {
+  const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
   const response = await fetch('http://127.0.0.1:5000/api/v1/places/', {
-    headers: {
-      'Authorization': `Bearer ${token}`
-    }
+    headers
   });
   const data = await response.json();
   displayPlaces(data);
@@ -56,11 +59,15 @@ function checkAuthentificationPlace() {
   const token = getCookie('token');
   const addReviewSection = document.getElementById('add-review');
   const placeId = getPlaceIdFromURL();
+  fetchPlacesDetails(token, placeId);
   if (!token) {
-    addReviewSection.style.display = 'none';
+    if (addReviewSection) {
+      addReviewSection.style.display = 'none';
+    }
   } else {
-    addReviewSection.style.display = 'block';
-    fetchPlacesDetails(token, placeId);
+    if (addReviewSection) {
+      addReviewSection.style.display = 'block';
+    }
     const reviewForm = document.getElementById('review-form');
     if (reviewForm) {
       reviewForm.addEventListener('submit', async (event) => {
@@ -74,17 +81,14 @@ function checkAuthentificationPlace() {
 }
 
 async function fetchPlacesDetails(token, placeId) {
+  const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
   const response = await fetch(`http://127.0.0.1:5000/api/v1/places/${placeId}`, {
-    headers: {
-      'Authorization': `Bearer ${token}`
-    }
+    headers
   });
   const data = await response.json();
   displayPlaceDetails(data);
   const reviews = await fetch(`http://127.0.0.1:5000/api/v1/reviews/places/${placeId}`, {
-    headers: {
-      'Authorization': `Bearer ${token}`
-    }
+    headers
   });
   const reviewsData = await reviews.json();
   displayReviews(reviewsData);
