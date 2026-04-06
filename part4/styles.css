@@ -69,8 +69,9 @@ button:hover, .login-button:hover, .details-button:hover {
 
 .place-card, .place-details, .place-info, .review-card {
     margin: 20px auto;
-    padding: 20px;
+    padding: 10px;
     border-radius: 10px;
+    border: 1px solid #ddd;
     box-shadow: 0 4px 6px rgba(0,0,0,0.1);
     max-width: 600px;
     color: #fff;
@@ -92,7 +93,6 @@ button:hover, .login-button:hover, .details-button:hover {
 .review-card {
     background-color: #fff;
     color: #333;
-    border: 1px solid #ddd;
 }
 
 @media (max-width: 600px) {
@@ -147,6 +147,37 @@ button:hover, .login-button:hover, .details-button:hover {
 }
 
 #login-form button {
+    width: 100%;
+    padding: 0.8rem;
+    background-color: #E63946;
+    font-size: 16px;
+}
+
+.add-review {
+    max-width: 600px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.add-review .form label {
+    display: block;
+    margin-bottom: 0.3rem;
+    font-weight: bold;
+}
+
+.add-review .form textarea,
+.add-review .form select {
+    width: 100%;
+    padding: 0.5rem;
+    margin-bottom: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.add-review .form button {
     width: 100%;
     padding: 0.8rem;
     background-color: #E63946;
