@@ -1,0 +1,5 @@
+Flask==3.0.2
+flask-restx
+flask-bcrypt
+flask-jwt-extended
+flask-sqlalchemy
