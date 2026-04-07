@@ -148,7 +148,6 @@ function getPlaceIdFromURL()
 - Python 3 installed
 
 ### Steps
-
 **1. Start the backend**
 ```bash
 cd backend

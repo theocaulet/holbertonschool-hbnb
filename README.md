@@ -138,5 +138,4 @@ http://127.0.0.1:8000/index.html
 - Part 4 adds the web interface on top of the backend.
 
 ## Author
-
 Project completed as part of the Holberton School curriculum.
