@@ -234,4 +234,5 @@ You should see a list of places in JSON format.
 ---
 
 ## Author
+
 Project completed as part of the Holberton School curriculum.
