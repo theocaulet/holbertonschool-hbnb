@@ -9,28 +9,52 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 
-<body>
-    <header>
-        <img src="images/logo.png" alt="Logo" class="logo">
-        <h1>List of Places</h1>
-        <nav>
+    <body>
+    <header class="site-header">
+        <div class="header-left">
+            <img src="images/logo.png" alt="Logo" class="logo">
+            <span class="brand">HBnB</span>
+        </div>
+        <nav class="main-nav">
             <a href="index.html">Home</a>
             <a href="login.html" id="login-link" class="login-button">Login</a>
+            <button id="logout-button" class="login-button" style="display:none;">Logout</button>
         </nav>
     </header>
     <main>
-        <section id="filter">
-            <label for="price-filter">Max Price:</label>
+        <section class="hero">
+            <div class="hero-content">
+                <p class="eyebrow">Discover stays that feel like art</p>
+                <h1>Find your next iconic place</h1>
+                <p class="subtitle">Browse unique apartments and houses around the world, with curated interiors inspired by contemporary design.</p>
+            </div>
+            <div class="hero-image"></div>
+        </section>
+        <section id="filter" class="filters-section">
+            <label for="price-filter">Max price</label>
             <select id="price-filter">
-                <!-- Options will be populated dynamically -->
+                <option value="10">10</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+                <option value="all">All</option>
             </select>
         </section>
-        <section id="places-list">
+        <section id="places-list" class="places-grid">
             <!-- List of places will be populated dynamically -->
         </section>
     </main>
     <footer>
-        <p>All rights reserved</p>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>About us</h3>
+                <p>HBnB is a curated collection of modern stays designed for comfort and style.</p>
+            </div>
+            <div class="footer-section">
+                <h3>Contact us</h3>
+                <p>Email: support@hbnb.com<br>Phone: +1 (555) 123-4567</p>
+            </div>
+        </div>
+        <p class="footer-copy">All rights reserved</p>
     </footer>
     <script src="scripts.js"></script>
 </body>

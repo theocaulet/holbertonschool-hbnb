@@ -9,31 +9,33 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 
-<body>
-    <header>
-        <img src="images/logo.png" alt="Logo" class="logo">
-        <h1>List of Places</h1>
-        <nav>
+    <body>
+    <header class="site-header">
+        <div class="header-left">
+            <img src="images/logo.png" alt="Logo" class="logo">
+            <span class="brand">HBnB</span>
+        </div>
+        <nav class="main-nav">
             <a href="index.html">Home</a>
             <a href="login.html" id="login-link" class="login-button">Login</a>
+            <button id="logout-button" class="login-button" style="display:none;">Logout</button>
         </nav>
     </header>
-    <main>
-        <section id="place-details">
+    <main class="detail-layout">
+        <section id="place-details" class="detail-column">
             <!-- Place details will be populated dynamically -->
         </section>
-        <section id="reviews">
+        <section id="reviews" class="detail-column">
             <!-- Reviews will be populated dynamically -->
         </section>
-        <section id="add-review" style="display:none">
+        <section id="add-review" class="add-review" style="display:none">
             <h2>Add a Review</h2>
-            <form id="review-form">
+            <form id="review-form" class="form">
                 <label for="review-text">Review:</label>
                 <textarea id="review-text" name="review-text" required></textarea>
                 <label for="rating">Rating:</label>
                 <select id="rating" name="rating" required>
                     <option value="">Select a rating</option>
-                    <option value="0">0</option>
                     <option value="1">1</option>
                     <option value="2">2</option>
                     <option value="3">3</option>
@@ -45,7 +47,17 @@
         </section>
     </main>
     <footer>
-        <p>All rights reserved</p>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>About us</h3>
+                <p>Discover carefully selected places with thoughtful interiors and amenities.</p>
+            </div>
+            <div class="footer-section">
+                <h3>Contact us</h3>
+                <p>Email: support@hbnb.com<br>Phone: +1 (555) 123-4567</p>
+            </div>
+        </div>
+        <p class="footer-copy">All rights reserved</p>
     </footer>
     <script src="scripts.js"></script>
 </body>

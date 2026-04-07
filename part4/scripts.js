@@ -9,22 +9,38 @@ function getCookie(name) {
   return null;
 }
 
-function checkauthentification() {
+async function loginUser(email, password) {
+  const response = await fetch('http://127.0.0.1:5000/api/v1/auth/login', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ email, password })
+  });
+  return response;
+}
+
+function checkAuthentication() {
   const token = getCookie('token');
   const loginLink = document.getElementById('login-link');
   if (!token) {
-    loginLink.style.display = 'block';
-  } else {
+    if (loginLink) {
+      loginLink.style.display = 'block';
+    }
+    // Rediriger les utilisateurs non authentifiés vers la page de connexion
+    window.location.href = 'login.html';
+    return null;
+  } else if (loginLink) {
     loginLink.style.display = 'none';
-    fetchPlaces(token);
   }
+  fetchPlaces(token);
+  return token;
 }
 
 async function fetchPlaces(token) {
+  const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
   const response = await fetch('http://127.0.0.1:5000/api/v1/places/', {
-    headers: {
-      'Authorization': `Bearer ${token}`
-    }
+    headers
   });
   const data = await response.json();
   displayPlaces(data);
@@ -56,11 +72,15 @@ function checkAuthentificationPlace() {
   const token = getCookie('token');
   const addReviewSection = document.getElementById('add-review');
   const placeId = getPlaceIdFromURL();
+  fetchPlacesDetails(token, placeId);
   if (!token) {
-    addReviewSection.style.display = 'none';
+    if (addReviewSection) {
+      addReviewSection.style.display = 'none';
+    }
   } else {
-    addReviewSection.style.display = 'block';
-    fetchPlacesDetails(token, placeId);
+    if (addReviewSection) {
+      addReviewSection.style.display = 'block';
+    }
     const reviewForm = document.getElementById('review-form');
     if (reviewForm) {
       reviewForm.addEventListener('submit', async (event) => {
@@ -74,17 +94,14 @@ function checkAuthentificationPlace() {
 }
 
 async function fetchPlacesDetails(token, placeId) {
+  const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
   const response = await fetch(`http://127.0.0.1:5000/api/v1/places/${placeId}`, {
-    headers: {
-      'Authorization': `Bearer ${token}`
-    }
+    headers
   });
   const data = await response.json();
   displayPlaceDetails(data);
   const reviews = await fetch(`http://127.0.0.1:5000/api/v1/reviews/places/${placeId}`, {
-    headers: {
-      'Authorization': `Bearer ${token}`
-    }
+    headers
   });
   const reviewsData = await reviews.json();
   displayReviews(reviewsData);
@@ -92,6 +109,9 @@ async function fetchPlacesDetails(token, placeId) {
 
 function displayPlaceDetails(place) {
   const placeDetails = document.getElementById('place-details');
+  const amenitiesText = Array.isArray(place.amenities) && place.amenities.length
+    ? `${place.amenities.length} amenities`
+    : 'None';
   placeDetails.innerHTML = `
         <div class="place-details">
           <h2>${place.title}</h2>
@@ -100,7 +120,7 @@ function displayPlaceDetails(place) {
         <div class="place-info">
           <p>Price: $${place.price} per night</p>
           <p>Host ID: ${place.owner_id}</p>
-          <p>Amenities: ${place.amenities ? place.amenities.map(a => a.name).join(', ') : 'None'}</p>
+          <p>Amenities: ${amenitiesText}</p>
         </div>
         `;
 }
@@ -153,49 +173,85 @@ function handleResponse(response) {
   }
 }
 document.addEventListener('DOMContentLoaded', () => {
-  if (window.location.pathname.includes('login.html')) {
-    document.getElementById('login-form').addEventListener('submit', async (event) => {
-      event.preventDefault();
-      const email = document.getElementById('email').value;
-      const password = document.getElementById('password').value;
-
-      const response = await fetch('http://127.0.0.1:5000/api/v1/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ email, password })
+  const logoutButton = document.getElementById('logout-button');
+  const token = getCookie('token');
+  if (logoutButton) {
+    if (!token) {
+      logoutButton.style.display = 'none';
+    } else {
+      logoutButton.style.display = 'inline-block';
+      logoutButton.addEventListener('click', () => {
+        document.cookie = 'token=; path=/; max-age=0';
+        window.location.href = 'login.html';
       });
-      if (response.ok) {
-        const data = await response.json();
-        document.cookie = `token=${data.access_token}; path=/`;
-        window.location.href = 'index.html';
-      } else {
-        alert('Login failed: ' + response.statusText);
-      }
-    });
+    }
   }
-  if (window.location.pathname.includes('index.html')) {
-    const priceFilter = document.getElementById('price-filter');
-    priceFilter.innerHTML = `
-      <option value="all">All</option>
-      <option value="10">10</option>
-      <option value="50">50</option>
-      <option value="100">100</option>
-    `;
-    checkauthentification();
-    priceFilter.addEventListener('change', (event) => {
-      const selectedPrice = event.target.value;
-      const placeCards = document.querySelectorAll('.place-card');
-      placeCards.forEach(card => {
-        const price = parseFloat(card.dataset.price);
-        if (selectedPrice === 'all' || price <= parseInt(selectedPrice)) {
-          card.style.display = 'block';
-        } else {
-          card.style.display = 'none';
+
+  if (window.location.pathname.includes('login.html')) {
+    const loginForm = document.getElementById('login-form');
+    const errorElement = document.getElementById('login-error');
+    if (loginForm) {
+      loginForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+
+        if (errorElement) {
+          errorElement.textContent = '';
+        }
+
+        try {
+          const response = await loginUser(email, password);
+          if (response.ok) {
+            const data = await response.json();
+            document.cookie = `token=${data.access_token}; path=/`;
+            window.location.href = 'index.html';
+          } else {
+            let message = 'Login failed';
+            try {
+              const errorData = await response.json();
+              if (errorData.msg) {
+                message = errorData.msg;
+              } else if (errorData.error) {
+                message = errorData.error;
+              }
+            } catch (e) {
+              message = 'Login failed: ' + response.statusText;
+            }
+            if (errorElement) {
+              errorElement.textContent = message;
+            } else {
+              alert(message);
+            }
+          }
+        } catch (e) {
+          const message = 'Network error, please try again.';
+          if (errorElement) {
+            errorElement.textContent = message;
+          } else {
+            alert(message);
+          }
         }
       });
-    });
+    }
+  }
+  if (window.location.pathname.includes('index.html')) {
+    checkAuthentication();
+    const priceFilter = document.getElementById('price-filter');
+    if (priceFilter) {
+      priceFilter.addEventListener('change', (event) => {
+        const selectedPrice = event.target.value;
+        const placeCards = document.querySelectorAll('.place-card');
+        placeCards.forEach(card => {
+          const price = parseFloat(card.dataset.price || '0');
+          if (selectedPrice === 'all' || price <= parseFloat(selectedPrice)) {
+            card.style.display = 'block';
+          } else {
+            card.style.display = 'none';
+          }
+        });
+      });
+    }
   }
 if (window.location.pathname.includes('place.html')) {
   checkAuthentificationPlace();
