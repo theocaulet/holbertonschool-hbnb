@@ -190,7 +190,7 @@ document.addEventListener('DOMContentLoaded', () => {
       placeCards.forEach(card => {
         const price = parseFloat(card.dataset.price);
         if (selectedPrice === 'all' || price <= parseInt(selectedPrice)) {
-          card.style.display = 'block';
+          card.style.display = 'flex';
         } else {
           card.style.display = 'none';
         }
